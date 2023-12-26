@@ -3,12 +3,14 @@ import personService from "./services/persons";
 import Filter from "./components/Filter";
 import PersonsForm from "./components/PersonsForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchName, setSearchName] = useState("");
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     console.log("effect");
@@ -48,14 +50,33 @@ const App = () => {
                   person.id !== isNameAdded.id ? person : returnedPerson
                 )
               );
+              setMessage(`Number of ${newName} is changed`);
+              setTimeout(() => {
+                setMessage(null);
+              }, 5000);
               setNewName("");
               setNewNumber("");
+            })
+            .catch(() => {
+              setMessage(
+                `Information of ${newName} is already removed from the server`
+              );
+              setTimeout(() => {
+                setMessage(null);
+              }, 5000);
+              setPersons(
+                persons.filter((person) => person.id !== isNameAdded.id)
+              );
             });
         }
       }
     } else {
       personService.create(personObject).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
+        setMessage(`Added ${newName}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
         setNewName("");
         setNewNumber("");
       });
@@ -90,6 +111,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter searchName={searchName} handleFilter={handleFilter} />
       <h3>Add a new</h3>
       <PersonsForm
