@@ -23,16 +23,36 @@ const App = () => {
     event.preventDefault();
     const personObject = {
       name: newName,
-      number: newNumber ? newNumber : "",
+      number: newNumber,
       id: persons.length + 1,
     };
     const isNameAdded = persons.find(
       (person) => person.name.toLowerCase() === personObject.name.toLowerCase()
     );
     if (isNameAdded) {
-      alert(`${newName} is already added to phonebook`);
-      setNewName("");
-      setNewNumber("");
+      if (isNameAdded.number === newNumber) {
+        alert(`${newName} is already added to phonebook`);
+        setNewName("");
+        setNewNumber("");
+      } else {
+        if (
+          window.confirm(
+            `${newName} is already added to phonebook. Do you want to replace the phone number?`
+          )
+        ) {
+          personService
+            .update(isNameAdded.id, personObject)
+            .then((returnedPerson) => {
+              setPersons(
+                persons.map((person) =>
+                  person.id !== isNameAdded.id ? person : returnedPerson
+                )
+              );
+              setNewName("");
+              setNewNumber("");
+            });
+        }
+      }
     } else {
       personService.create(personObject).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
