@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 
 app.use(express.json());
+const morgan = require("morgan");
+app.use(morgan("tiny"));
 
 let persons = [
   {
@@ -60,6 +62,13 @@ const generateId = () => {
   const newId = Math.floor(Math.random() * 200);
   return newId;
 };
+
+morgan.token("body", function (req, res) {
+  return JSON.stringify(req.body);
+});
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
