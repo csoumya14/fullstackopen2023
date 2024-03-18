@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+    "title": "Talk against descrimination",
+    "author": "kunjappan",
+    "url": "http//antidescriminatorylaw",
+    "likes": 20000
+}
